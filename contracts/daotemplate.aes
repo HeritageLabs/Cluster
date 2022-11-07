@@ -1,5 +1,7 @@
-include "List.aes"
+@compiler >= 6
+
 include "String.aes"
+include "List.aes"
 
 contract DAO = 
 
@@ -30,13 +32,13 @@ contract DAO =
         voteTime: int}
 
     stateful entrypoint init(_voteTime: int, _quorum: int, _members: list(address)) =
-        {voteTime = _voteTime,
+        {voteTime = _voteTime * 3600000,
             quorum = _quorum,
             members = _members,
             _ismember = {},
             proposals = [],
             totalProposals = 0,
-            totalMembers = 0}
+            totalMembers = List.length(_members)}
 
     public entrypoint getProposal(_id: int): proposal = List.get(_id, state.proposals)
 
@@ -53,11 +55,8 @@ contract DAO =
 
     public stateful entrypoint vote(_proposalId: int) = 
         require(_proposalId < state.totalProposals, "Invalid proposal id")
-        let p : proposal = List.get(_proposalId, state.proposals)
-        require(p.endTime > Chain.timestamp, "This proposal has ended")
-        p{votes = p.votes + 1}
         put(state{proposals =
-            List.replace_at(_proposalId, p, state.proposals)})
+            List.replace_at(_proposalId, List.get(_proposalId, state.proposals){votes @ v = v + 1}, state.proposals)})
 
     /** createProposal -  function to create a new proposal
             args - 
@@ -114,14 +113,14 @@ contract DAO =
         
         p{isExecuted = true}
         put(state{proposals = 
-            List.replace_at(_proposalId, p, state.proposals)})
+            List.replace_at(_proposalId, List.get(_proposalId, state.proposals){isExecuted = true}, state.proposals)})
 
 
     stateful entrypoint _setQuorum(_quorum: int) = 
         put(state{quorum = _quorum})
 
     stateful entrypoint _setVoteTime(_voteTime: int) = 
-        put(state{voteTime = _voteTime})
+        put(state{voteTime = _voteTime * 3600000})
 
     stateful entrypoint _addMember(_member: address) = 
         put(state{members @ m = m ++ [_member]})

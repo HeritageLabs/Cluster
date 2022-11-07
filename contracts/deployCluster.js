@@ -24,7 +24,7 @@ const COMPILER_URL = 'https://compiler.aepps.com';
   await aeSdk.addAccount(account, { select: true });
   const contract = await aeSdk.getContractInstance({ source: CONTRACT_SOURCE });
   const aci = await contract._aci
-  fs.writeFileSync('./ACI.json', JSON.stringify(aci));
+  fs.writeFileSync('./clusterACI.json', JSON.stringify(aci));
   //const contract = await aeSdk.getContractInstance({ aci, contractAddress: "ct_2o6P4z4cBaiecJBYzRdPsswAgYJy6MybFRiJ6zckjFVPGtbHG" });
 //	console.log(contract)
 //	console.log(contract.methods)
@@ -34,12 +34,7 @@ const COMPILER_URL = 'https://compiler.aepps.com';
 	//const tx2 = await contract.methods.getDAOs();
 	//console.log(tx2.decodedResult);
 	//console.log(typeof tx2.decodedResult[0].contract_address);
-/*	 
 	 
-	await contract.methods.donate(0, {amount: 1000000000000000000});
-	const tx1 = await contract.methods.create_campaign("Greener Earth", "We are planning to plant 5000 trees before the end of the year, donate to support us", "https://greentumble.com/wp-content/uploads/2015/10/plant-a-tree.jpg", 1000000000000000000000)
-	const tx2 = await contract.methods.get_campaigns()
-	console.log(tx2.decodedResult);*/
 
 	console.log("contract address", deployInfo.address);
 

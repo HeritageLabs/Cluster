@@ -2,7 +2,7 @@ import { AeSdkAepp, Node, BrowserWindowMessageConnection, walletDetector} from '
 import clusterACI from './clusterACI.json';
 import daoACI from "./daoACI.json";
 
-export const clusterAddress = "ct_C5wXWSC3sLbCyGukpNjTkyX3ZqZpxDEejFuEBPWKoXfCXrA84";
+export const clusterAddress = "ct_4GgKrRbehhu6MVS5v3zy1kRHDjidfWgaGwFE6A1VbGZ1Rx9Hk";
 
 const COMPILER_URL = 'https://compiler.aepps.com';
 
