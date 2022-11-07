@@ -1,4 +1,5 @@
 import { Box, Divider, Flex, SimpleGrid, Text } from "@chakra-ui/react";
+import { Spinner } from "evergreen-ui";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CustomButton from "../components/CustomButton/customButton";
@@ -61,12 +62,14 @@ const Dao = () => {
 
   useEffect(() => {
     init();
-  }, [])
-
-
+  }, []);
+  
   return (
     <Box>
       <NavBar />
+
+      {DAOAddress === "" ? <Flex justifyContent="center" mt="20px"><Spinner /> </Flex> :
+      <>
       <Flex
         bg="brand.primary"
         color="brand.white"
@@ -160,7 +163,7 @@ const Dao = () => {
               color="brand.white"
               border="1px solid #FAF9F7"
               w="80%"
-              m="10%"
+              m="5% 10%"
               mx="auto"
               href={`/create-proposal/${id}`}
             >
@@ -267,6 +270,8 @@ const Dao = () => {
           </Box>
         </SimpleGrid>
       </Box>
+      </>
+      }
     </Box>
   );
 };

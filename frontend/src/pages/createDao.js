@@ -1,10 +1,11 @@
-import { Box, Flex, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid, Spinner, Text, useDisclosure } from "@chakra-ui/react";
 import { useState } from "react";
 import TextInput from "../components/TextInputs/TextInput";
 import CustomButton from "../components/CustomButton/customButton";
 import NavBar from "../components/Navbar/navbar";
 import SuccessModal from "../components/Modal/successModal";
 import { createDAO } from "../utils/cluster";
+import { toaster } from "evergreen-ui";
 
 const CreateDao = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -13,14 +14,26 @@ const CreateDao = () => {
   const [votingTime, setVotingtime] = useState("");
   const [quorum, setQuorum] = useState("");
   const [walletAddr, setWalletAddr] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if ((fullName, votingTime, quorum, walletAddr)) {
-      const daoDetails = { name: fullName, voteTime: votingTime, quorum, members: walletAddr.split(' ') };
-      console.log(daoDetails);
-      await createDAO(daoDetails);
-      onOpen();
+    setIsLoading(true);
+    try {
+      if ((fullName, votingTime, quorum, walletAddr)) {
+        const daoDetails = { name: fullName, voteTime: votingTime, quorum, members: walletAddr.split(' ') };
+        console.log(daoDetails);
+        await createDAO(daoDetails)
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err))
+        .finally(() => setIsLoading(false));
+        onOpen();
+      } else {
+        toaster.danger("Error occured");
+        setIsLoading(false)
+      }
+    } catch (error) {
+      toaster.danger("Error occured")
     }
   };
   return (
@@ -94,8 +107,9 @@ const CreateDao = () => {
               w="100%"
               disabled={!fullName || !votingTime || !quorum || !walletAddr}
               href="/home"
+              isLoading={isLoading}
             >
-              Create DAO
+              {isLoading ? <Spinner /> : "Create DAO"}
             </CustomButton>
           </form>
         </Box>

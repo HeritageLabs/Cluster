@@ -1,4 +1,13 @@
-import { Box, Flex, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  FormLabel,
+  Select,
+  SimpleGrid,
+  Text,
+  Textarea,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import TextInput from "../components/TextInputs/TextInput";
 import CustomButton from "../components/CustomButton/customButton";
@@ -6,34 +15,52 @@ import NavBar from "../components/Navbar/navbar";
 import SuccessModal from "../components/Modal/successModal";
 import { createProposal, getDA0 } from "../utils/cluster";
 import { useNavigate, useParams } from "react-router";
+import { TriangleDownIcon } from "@chakra-ui/icons";
+import { toaster } from "evergreen-ui";
 
 const CreateProposal = () => {
   const navigate = useNavigate();
   const [DAOAddress, setDAOAddress] = useState("");
-  const [DAOName, setDAOName] =  useState("");
+  const [DAOName, setDAOName] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [proposalType, setProposalType] = useState("");
   const [value, setValue] = useState("");
   const [receipientAddress, setReceipientAddress] = useState("");
-  const {id} = useParams();
+  const [isLoading, setIsLoading] = useState(false);
+  const { id } = useParams();
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if ((title, description, proposalType, value)) {
-      const proposalDetails = { title, description, proposalType, value: value * 1e18, receipientAddress};
-    //   console.log(proposalDetails);
-      await createProposal(DAOAddress, proposalDetails);
-      navigate(`/dao/${id}`); 
+    setIsLoading(true);
+    try {
+      if ((title, description, proposalType, value)) {
+        const proposalDetails = {
+          title,
+          description,
+          proposalType,
+          value: value * 1e18,
+          receipientAddress,
+        };
+        //   console.log(proposalDetails);
+        await createProposal(DAOAddress, proposalDetails)
+          .then((res) => console.log(res))
+          .catch((err) => toaster.danger(err))
+          .finally(() => setIsLoading(false));
+        navigate(`/dao/${id}`);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      toaster.danger("Error occured");
     }
   };
 
   useEffect(() => {
     getDA0(id).then((res) => {
-        setDAOAddress(res.contract_address);
-        setDAOName(res.name);
-    })
-  }, [])
+      setDAOAddress(res.contract_address);
+      setDAOName(res.name);
+    });
+  }, []);
 
   return (
     <Box>
@@ -70,7 +97,16 @@ const CreateProposal = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
 
-            <TextInput
+            <FormLabel
+              color="brand.dark"
+              fontSize="14px"
+              fontWeight="300"
+              mt="20px"
+            >
+              Proposal details
+            </FormLabel>
+
+            <Textarea
               type="text"
               placeholder="What is this proposal for ?"
               label="Proposal details"
@@ -79,14 +115,35 @@ const CreateProposal = () => {
               onChange={(e) => setDescription(e.target.value)}
             />
 
-            <TextInput
-              type="text"
-              placeholder="transfer, add, remove, quorum voteTime"
-              label="Proposal Type"
+            <FormLabel
               color="brand.dark"
-              value={proposalType}
+              fontSize="14px"
+              fontWeight="300"
+              mt="20px"
+            >
+              Proposal Type
+            </FormLabel>
+
+            <Select
+              mr="1px"
+              bg="#F2F2F2"
+              borderRadius="4px"
+              fontSize="16px"
+              fontWeight="500"
+              iconSize="10px"
+              color="brand.dark"
+              _focus={{ border: "#1C1CFF" }}
+              icon={<TriangleDownIcon />}
               onChange={(e) => setProposalType(e.target.value)}
-            />
+              data-testid="select"
+              value={proposalType}
+            >
+              <option value="Transfer">Transfer</option>
+              <option value="Add">Add</option>
+              <option value="Remove">Remove</option>
+              <option value="Vote Time">Vote Time</option>
+              <option value="Quorum">Quorum</option>
+            </Select>
 
             <TextInput
               type="text"
@@ -113,8 +170,15 @@ const CreateProposal = () => {
               border="1px solid #FAF9F7"
               mt="20px"
               w="100%"
-              disabled={!title || !description || !proposalType || !value || !receipientAddress}
+              disabled={
+                !title ||
+                !description ||
+                !proposalType ||
+                !value ||
+                !receipientAddress
+              }
               href={`/dao/${id}`}
+              isLoading={isLoading}
             >
               Create Proposal
             </CustomButton>
