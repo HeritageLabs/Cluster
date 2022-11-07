@@ -1,4 +1,3 @@
-
 @compiler >= 6
 
 include "String.aes"
@@ -26,18 +25,24 @@ contract DAO =
         votes: int,
         isExecuted: bool}
 
+    record details = {
+        balance: int,
+        members: list(address),
+        quorum: int,
+        voteTime: int}
+
     stateful entrypoint init(_voteTime: int, _quorum: int, _members: list(address)) =
-        {voteTime = _voteTime,
+        {voteTime = _voteTime * 3600000,
             quorum = _quorum,
             members = _members,
             _ismember = {},
             proposals = [],
             totalProposals = 0,
-            totalMembers = 0}
+            totalMembers = List.length(_members)}
 
     public entrypoint getProposal(_id: int): proposal = List.get(_id, state.proposals)
 
-    public entrypoint getAllProposals(): list(proposal) = state.proposals
+    public entrypoint getProposals(): list(proposal) = state.proposals
 
     public entrypoint getOngoingProposals(): list(proposal) =
         List.filter((p) => p.endTime < Chain.timestamp, state.proposals)
@@ -45,22 +50,13 @@ contract DAO =
     public entrypoint getProposalsToExecute(): list(proposal) = 
         List.filter((p) => p.endTime > Chain.timestamp && p.isExecuted == true, state.proposals)
 
-    public entrypoint getBalance(): int = Contract.balance
-
-    public entrypoint getMembers(): list(address) = state.members
-
-    public entrypoint getQuorum(): int = state.quorum
-
-    public entrypoint getVoteTime(): int = state.voteTime
+    public entrypoint getDetails(): details = {balance = Contract.balance, members = state.members, quorum = state.quorum, voteTime = state.voteTime}
 
 
     public stateful entrypoint vote(_proposalId: int) = 
         require(_proposalId < state.totalProposals, "Invalid proposal id")
-        let p : proposal = List.get(_proposalId, state.proposals)
-        require(p.endTime > Chain.timestamp, "This proposal has ended")
-        p{votes = p.votes + 1}
         put(state{proposals =
-            List.replace_at(_proposalId, p, state.proposals)})
+            List.replace_at(_proposalId, List.get(_proposalId, state.proposals){votes @ v = v + 1}, state.proposals)})
 
     /** createProposal -  function to create a new proposal
             args - 
@@ -117,14 +113,14 @@ contract DAO =
         
         p{isExecuted = true}
         put(state{proposals = 
-            List.replace_at(_proposalId, p, state.proposals)})
+            List.replace_at(_proposalId, List.get(_proposalId, state.proposals){isExecuted = true}, state.proposals)})
 
 
     stateful entrypoint _setQuorum(_quorum: int) = 
         put(state{quorum = _quorum})
 
     stateful entrypoint _setVoteTime(_voteTime: int) = 
-        put(state{voteTime = _voteTime})
+        put(state{voteTime = _voteTime * 3600000})
 
     stateful entrypoint _addMember(_member: address) = 
         put(state{members @ m = m ++ [_member]})
@@ -146,19 +142,21 @@ main contract Cluster =
 
     record dao = {
         id: int,
-        contract_address: address,
+        name: string,
+        contract_address: DAO,
+        created_at: int,
         creator: address}
 
     stateful entrypoint init() = 
         {daos = [],
             totalDAOs = 0}
 
-    public stateful entrypoint createDAO(_voteTime: int, _quorum: int, _members: list(address)) = 
+    public stateful entrypoint createDAO(_name: string, _voteTime: int, _quorum: int, _members: list(address)): DAO = 
         let _newDAOContract = Chain.create(_voteTime, _quorum, _members) : DAO
-        let _newDAO = {id = state.totalDAOs, contract_address = _newDAOContract.address, creator = Call.caller}
+        let _newDAO = {id = state.totalDAOs, name = _name, contract_address = _newDAOContract, created_at = Chain.timestamp, creator = Call.caller}
         put(state{totalDAOs @ t = t + 1})
         put(state{daos = state.daos ++ [_newDAO]})
-        _newDAO.id
+        _newDAOContract
 
     public entrypoint getDAOs() : list(dao) = state.daos
 
@@ -167,4 +165,4 @@ main contract Cluster =
 
     public entrypoint getDAO(_id: int): dao = List.get(_id, state.daos)
 
-        
+

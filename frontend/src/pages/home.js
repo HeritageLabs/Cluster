@@ -1,44 +1,50 @@
 import { Box, Divider, Flex, SimpleGrid, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomButton from "../components/CustomButton/customButton";
 import NavBar from "../components/Navbar/navbar";
+import { clusterAddress, getDA0s, getDAODetails } from "../utils/cluster";
+
 
 const Home = () => {
     const [viewAllDAO, setViewAllDAO] = useState(false);
-  const allDAO = [
-    {
-        id: 1,
-      name: "Heritage DAO",
-      member: "12",
-      amount: "3,400ae",
-      isOwned: false,
-      dateCreated: "22/03/2022",
-    },
-    {
-        id: 2,
-      name: "Legacy DAO",
-      member: "22",
-      amount: "8,400ae",
-      isOwned: true,
-      dateCreated: "22/03/2022",
-    },
-    {
-        id: 3,
-      name: "Legacy DAO",
-      member: "22",
-      amount: "8,400ae",
-      isOwned: true,
-      dateCreated: "22/03/2022",
-    },
-    {
-        id: 4,
-      name: "Heritage DAO",
-      member: "12",
-      amount: "3,400ae",
-      isOwned: false,
-      dateCreated: "22/03/2022",
-    },
-  ];
+    const [DAOs, setDAOs] = useState([]);
+
+  async function init() {
+      await getAllDAOs();
+  }
+
+  const getAllDAOs = async () => {
+    try {
+      let f = localStorage.getItem('DAOs');
+      if (f) {
+        setDAOs(JSON.parse(f));
+      }
+      getDA0s().then((res) => {
+        //Convert BigInts to string before storing locally
+        res = res.map((d) => {
+          d.id = d.id.toString();
+          d.created_at = d.created_at.toString();
+          return d;
+        });
+        setDAOs(res);
+        localStorage.setItem("daos", JSON.stringify(res));
+      })
+      // //Update user balance if connected
+      // if(aeSdk) {
+      //   const accountBalance = (await aeSdk.getBalance(user)) / 1e18;
+      //   setBalance(accountBalance);
+      // }
+    } catch (error) {
+      console.log({ error });
+      window.alert("failed to get DAOs");
+      // toast(<NotificationError text="failed to get daos"/>)
+    };
+  }
+
+  useEffect(() => {
+    init();
+  }, [])
+
   return (
     <Box>
       <NavBar />
@@ -76,12 +82,12 @@ const Home = () => {
 
         {viewAllDAO &&
         <Box my="10px">
-            {allDAO.length < 1 ? (
+            {DAOs.length < 1 ? (
             <Text textAlign="center">You have no DAO yet. Start by creating a 
             <a href="/create-dao"><span style={{ color: "#1C1CFF", cursor: "pointer", marginLeft: "8px" }}>new DAO</span></a></Text>
             ) : (
         <SimpleGrid columns={3} mt="30" gap="20px" p="15px 80px">
-            {allDAO.map((dao, index) => (
+            {DAOs.map((dao, index) => (
                 <Box
                     padding="10px 20px"
                     mt="20px"
@@ -100,7 +106,7 @@ const Home = () => {
                     {dao.name}
                     </Text>
                     <Divider my="10px" />
-                    <Flex justifyContent="space-between" mt="10px">
+                    {/* <Flex justifyContent="space-between" mt="10px">
                     <Text>Amount:</Text>
                     <Text ml="10px" color="brand.gray">
                         {dao.amount}
@@ -111,16 +117,22 @@ const Home = () => {
                     <Text ml="10px" color="brand.gray">
                         {dao.member} members
                     </Text>
-                    </Flex>
+                    </Flex> */}
                     <Flex justifyContent="space-between" mt="10px">
                     <Text>Date Created: </Text>
                     <Text ml="10px" color="brand.gray">
-                        {dao.dateCreated}
+                        {(new Date(dao.created_at * 1)).toLocaleDateString()}
                     </Text>
                     </Flex>
-                    <Text mt="15px" color="brand.primary" fontSize="14px">
-                        {dao.isOwned ? "DAO created by me" : "Not owned"}
+                    <Flex justifyContent="space-between" mt="10px">
+                    <Text>Creator: </Text>
+                    <Text ml="10px" color="brand.gray">
+                        {dao.creator.slice(0, 13) + "..."}
                     </Text>
+                    </Flex>
+                    {/* <Text mt="15px" color="brand.primary" fontSize="14px">
+                        {dao.isOwned ? "DAO created by me" : "Not owned"}
+                    </Text> */}
                     <CustomButton
                     bg="none"
                     hoverBg="brand.primary"

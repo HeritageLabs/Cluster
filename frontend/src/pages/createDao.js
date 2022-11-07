@@ -4,6 +4,7 @@ import TextInput from "../components/TextInputs/TextInput";
 import CustomButton from "../components/CustomButton/customButton";
 import NavBar from "../components/Navbar/navbar";
 import SuccessModal from "../components/Modal/successModal";
+import { createDAO } from "../utils/cluster";
 
 const CreateDao = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -13,10 +14,12 @@ const CreateDao = () => {
   const [quorum, setQuorum] = useState("");
   const [walletAddr, setWalletAddr] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log({ fullName, votingTime, quorum, walletAddr });
     if ((fullName, votingTime, quorum, walletAddr)) {
+      const daoDetails = { name: fullName, voteTime: votingTime, quorum, members: walletAddr.split(' ') };
+      console.log(daoDetails);
+      await createDAO(daoDetails);
       onOpen();
     }
   };
@@ -33,7 +36,7 @@ const CreateDao = () => {
         justifyContent="space-evenly"
       >
         <Text>
-          Work with like-minded folks around the globe by creating a new{" "}
+          Decentralize your organization by creating a new{" "}
           <span style={{ color: "#F7E427" }}>DAO here!</span>
         </Text>
       </Flex>
@@ -56,7 +59,7 @@ const CreateDao = () => {
             />
 
             <TextInput
-              type="time"
+              type="text"
               placeholder="Enter voting time in hours"
               label="Voting Time"
               color="brand.dark"
@@ -75,7 +78,7 @@ const CreateDao = () => {
 
             <TextInput
               type="text"
-              placeholder="Enter member's wallet address"
+              placeholder="Other member's wallet address(comma separated)"
               label="Member's wallet Address"
               color="brand.dark"
               value={walletAddr}

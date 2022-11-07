@@ -7,6 +7,7 @@ import LandingPage from "../pages";
 import Home from "../pages/home";
 import CreateDao from "../pages/createDao";
 import Dao from "../pages/dao";
+import CreateProposal from "../pages/createProposal";
 
 const AppRoute = () => {
 
@@ -17,6 +18,7 @@ const AppRoute = () => {
         <Route index path="/" element={<LandingPage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/create-dao" element={<CreateDao />} />
+        <Route path="/create-proposal/:id" element={<CreateProposal />} />
         <Route path="/dao/:id" element={<Dao />} />
       </Routes>
      </ChakraProvider>
