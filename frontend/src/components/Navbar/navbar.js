@@ -9,6 +9,7 @@ const NavBar = () => {
   const [address, setAddress] = useState("");
   const [balance, setBalance] = useState();
   const [aeSdk, setAeSdk] = useState();
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const init = async() => {
     if(localStorage.getItem("isConnected")) {
@@ -25,6 +26,7 @@ const NavBar = () => {
   }, [])
 
   const connectWallet = async() => {
+    setIsConnecting(true);
     try {
       const client = await login();
       window.client = client;
@@ -34,22 +36,27 @@ const NavBar = () => {
       setBalance(accountBalance);
       setIsConnected(true);
       localStorage.setItem("isConnected", account);
+      setIsConnecting(false);
     } catch (err) {
       console.log(err);
       window.alert("Failed to connect wallet!");
+      setIsConnecting(false)
       // toast(<NotificationError text="failed to connect wallet"/>)
     }
   }
 
   const disconnectWallet = async() => {
+    setIsConnecting(true);
     try {
       setIsConnected(false);
       window.client = undefined;
       localStorage.removeItem("isConnected");
+      setIsConnecting(false);
       await logout();
     } catch (err) {
       console.log(err);
       window.alert("an error occured!");
+      setIsConnecting(false);
       // toast(<NotificationError text="an error occured"/>)
     }
   }
@@ -70,7 +77,7 @@ const NavBar = () => {
       </Box>
       {isConnected && <Text>
           Connected user:{" "}
-          <span style={{ color: "#F7E427" }}>{address.slice(0,35) + "..."}</span>
+          <span style={{ color: "#A2ADBE" }}>{address.slice(0,35) + "..."}</span>
       </Text>}
       {isConnected ? 
       <CustomButton
@@ -80,6 +87,7 @@ const NavBar = () => {
       color="brand.dark"
       border="1px solid #1A202C"
       onClick={() => disconnectWallet()}
+      isLoading={isConnecting}
     >
       Disconnect
     </CustomButton> :
@@ -91,6 +99,7 @@ const NavBar = () => {
         color="brand.dark"
         border="1px solid #1A202C"
         onClick={() => connectWallet()}
+        isLoading={isConnecting}
       >
         Connect Wallet
       </CustomButton>}
