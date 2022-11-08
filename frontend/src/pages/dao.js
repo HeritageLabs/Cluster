@@ -2,6 +2,7 @@ import { Box, Divider, Flex, SimpleGrid, Text } from "@chakra-ui/react";
 import { Spinner } from "evergreen-ui";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import HeadTag from "../components/Common/headTag";
 import CustomButton from "../components/CustomButton/customButton";
 import NavBar from "../components/Navbar/navbar";
 import TextInput from "../components/TextInputs/TextInput";
@@ -66,6 +67,7 @@ const Dao = () => {
   
   return (
     <Box>
+      <HeadTag title="Your DAO" />
       <NavBar />
 
       {DAOAddress === "" ? <Flex justifyContent="center" mt="20px"><Spinner /> </Flex> :
@@ -77,34 +79,35 @@ const Dao = () => {
         mt="20px"
         alignItems="center"
         justifyContent="space-evenly"
+        display={{ base: "block", lg: "flex" }}
       >
-        <Text>{DAOName + " " + DAOAddress}</Text>
+        <Text mt={{ base: "10px", lg: "0" }}>{DAOName + " " + DAOAddress}</Text>
         <CustomButton
                 bg="none"
                 hoverBg="brand.primary"
                 hoverColor="brand.white"
                 color="brand.white"
                 border="1px solid white"
-                mt="1px"
+                mt={{ base: "10px", lg: "1px"}}
                 onClick={() => {donate()}}
               >
                 Donate
               </CustomButton>
       </Flex>
-      <Box p="15px 80px">
-        <SimpleGrid columns={2} mt="30px" p="15px 80px">
+      <Box p={{ base: "5px 30px", lg: "15px 80px"}}>
+        <SimpleGrid columns={{ base: 1, lg: 2 }} mt="30px" p={{ base: "20px 30px", lg: "15px 80px"}}>
           <Box overflow="hidden">
-            <Text fontSize="40px" width="75%" fontWeight="bold">
+            <Text fontSize={{ base: "20px", lg: "40px"}} width={{ base: "100%", lg: "75%"}} fontWeight="bold">
               Details
             </Text>
           </Box>
           <Box overflowY="scroll">
-            <SimpleGrid columns={2} gap="20px">
+            <SimpleGrid columns={{ base: 1, lg: 2 }} gap="20px">
               <Flex
                 justifyContent="space-between"
                 mt="10px"
                 border="1px solid #1A202C"
-                p="10px 20px"
+                p="15px 20px"
               >
                 <Text>Members:</Text>
                 <Text ml="10px" color="brand.gray">
@@ -115,7 +118,7 @@ const Dao = () => {
                 justifyContent="space-between"
                 mt="10px"
                 border="1px solid #1A202C"
-                p="10px 20px"
+                p="15px 20px"
               >
                 <Text>Voting Time:</Text>
                 <Text ml="10px" color="brand.gray">
@@ -126,7 +129,7 @@ const Dao = () => {
                 justifyContent="space-between"
                 mt="10px"
                 border="1px solid #1A202C"
-                p="10px 20px"
+                p="15px 20px"
               >
                 <Text>Quorum:</Text>
                 <Text ml="10px" color="brand.gray">
@@ -137,7 +140,7 @@ const Dao = () => {
                 justifyContent="space-between"
                 mt="10px"
                 border="1px solid #1A202C"
-                p="10px 20px"
+                p="15px 20px"
               >
                 <Text>Balance:</Text>
                 <Text ml="10px" color="brand.gray">
@@ -148,9 +151,9 @@ const Dao = () => {
           </Box>
         </SimpleGrid>
         <Divider my="40px" />
-        <SimpleGrid columns={2} p="15px 80px">
+        <SimpleGrid columns={{ base: 1, lg: 2 }} p={{ base: "20px 30px", lg: "15px 80px"}}>
           <Box overflow="hidden">
-            <Text fontSize="40px" width="75%" fontWeight="bold">
+            <Text fontSize={{ base: "20px", lg: "40px"}} width={{ base: "100%", lg: "75%"}} fontWeight="bold">
               Proposals
             </Text>
           </Box>
@@ -170,12 +173,12 @@ const Dao = () => {
             Create a new Proposal
           </CustomButton>}
         </Box>
-            <SimpleGrid columns={2} gap="20px">
+            <SimpleGrid columns={{ base: 1, lg: 2 }} gap="20px">
               <Flex
                 justifyContent="space-between"
                 mt="10px"
                 border="1px solid #1A202C"
-                p="10px 20px"
+                p="15px 20px"
               >
                 <Text>Ongoing Proposals:</Text>
                 <Text ml="10px" color="brand.gray">
@@ -186,7 +189,7 @@ const Dao = () => {
                 justifyContent="space-between"
                 mt="10px"
                 border="1px solid #1A202C"
-                p="10px 20px"
+                p="15px 20px"
               >
                 <Text>Awaiting Execution:</Text>
                 <Text ml="10px" color="brand.gray">
@@ -197,7 +200,7 @@ const Dao = () => {
                 justifyContent="space-between"
                 mt="10px"
                 border="1px solid #1A202C"
-                p="10px 20px"
+                p="15px 20px"
               >
                 <Text>All Proposals:</Text>
                 <Text ml="10px" color="brand.gray">
@@ -210,7 +213,7 @@ const Dao = () => {
 
             <Box
               key={proposal.id}
-              padding="10px 20px"
+              padding="15px 20px"
               mt="40px"
               borderRadius="8px"
               style={{

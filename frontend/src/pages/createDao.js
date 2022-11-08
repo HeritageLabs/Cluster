@@ -6,6 +6,7 @@ import NavBar from "../components/Navbar/navbar";
 import SuccessModal from "../components/Modal/successModal";
 import { createDAO } from "../utils/cluster";
 import { toaster } from "evergreen-ui";
+import HeadTag from "../components/Common/headTag";
 
 const CreateDao = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,8 +45,8 @@ const CreateDao = () => {
   };
   return (
     <Box>
+      <HeadTag title="Create DAO" />
       <NavBar />
-
       <Flex
         bg="brand.primary"
         color="brand.white"
@@ -60,13 +61,13 @@ const CreateDao = () => {
         </Text>
       </Flex>
 
-      <SimpleGrid columns={2} mt="30px" p="15px 80px" alignItems="center">
+      <SimpleGrid columns={{ base: 1, lg: 2 }} mt="30px" p={{ base: "5px 30px", lg: "15px 80px"}} alignItems="center">
         <Box>
-          <Text fontSize="50px" width="75%" fontWeight="bold">
+          <Text fontSize={{base: "25px", md: "50px"}} width="75%" fontWeight="bold">
             Create New DAO
           </Text>
         </Box>
-        <Box overflowY="scroll" ml="-54px" w="80%">
+        <Box overflowY="scroll" ml={{ base: "10px", lg: "-54px"}} w={{ base: "100%", lg: "80%"}}>
           <form onSubmit={handleSubmit}>
             <TextInput
               type="text"
