@@ -1,5 +1,6 @@
 import { Box, Divider, Flex, SimpleGrid, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import HeadTag from "../components/Common/headTag";
 import CustomButton from "../components/CustomButton/customButton";
 import NavBar from "../components/Navbar/navbar";
 import { clusterAddress, getDA0s, getDAODetails } from "../utils/cluster";
@@ -47,6 +48,7 @@ const Home = () => {
 
   return (
     <Box>
+      <HeadTag title="View Demo" />
       <NavBar />
       <Box mt="40px" width="100%" m="30px auto" textAlign="center">
         <Box mx="auto">
@@ -56,7 +58,7 @@ const Home = () => {
             hoverColor="brand.primary"
             color="brand.white"
             border="1px solid #FAF9F7"
-            w="30%"
+            w={{ base: "80%", lg: "30%"}}
             mx="auto"
             href="/create-dao"
           >
@@ -70,7 +72,7 @@ const Home = () => {
             hoverColor="brand.white"
             color="brand.dark"
             border="1px solid #1A202C"
-            w="30%"
+            w={{ base: "80%", lg: "30%"}}
             m="20px 0"
             mx="auto"
             onClick={() => setViewAllDAO(!viewAllDAO)}
@@ -86,7 +88,7 @@ const Home = () => {
             <Text textAlign="center">You have no DAO yet. Start by creating a 
             <a href="/create-dao"><span style={{ color: "#1C1CFF", cursor: "pointer", marginLeft: "8px" }}>new DAO</span></a></Text>
             ) : (
-        <SimpleGrid columns={3} mt="30" gap="20px" p="15px 80px">
+        <SimpleGrid columns={{ base: 1, lg: 3 }} mt="30" gap="20px" p={{ base: "5px 30px", lg: "15px 80px"}}>
             {DAOs.map((dao, index) => (
                 <Box
                     padding="10px 20px"
@@ -96,7 +98,7 @@ const Home = () => {
                     boxShadow:
                         "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px",
                     }}
-                    w="80%"
+                    w={{ base: "100%", lg: "80%"}}
                     bg="white"
                     border=""
                     p="20px"

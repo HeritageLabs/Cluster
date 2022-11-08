@@ -1,18 +1,21 @@
 import { Box, Flex, SimpleGrid, Text } from "@chakra-ui/react";
+import HeadTag from "../components/Common/headTag";
 import CustomButton from "../components/CustomButton/customButton";
 import NavBar from "../components/Navbar/navbar";
 
 const LandingPage = () => {
   return (
     <Box>
+      <HeadTag />
       <NavBar />
       <Flex
         bg="brand.primary"
         color="brand.white"
         padding="10px 20px"
-        mt="20px"
         alignItems="center"
         justifyContent="space-evenly"
+        display={{ base: "block", md: "flex" }}
+        mt="20px"
       >
         <Text>
           Your Number 1 DAO tool on aetenity. Try it out today and see how it
@@ -26,19 +29,20 @@ const LandingPage = () => {
           color="brand.white"
           border="1px solid #FAF9F7"
           href="/home"
+          mt={{ base: "10px", md: "0" }}
         >
           View Demo
         </CustomButton>
       </Flex>
 
-      <SimpleGrid columns={2} mt="30px" p="15px 80px">
+      <SimpleGrid columns={{ base: 1, md: 2 }} mt="30px" p={{ base: "5px 30px", md: "15px 80px"}}>
         <Box overflow="hidden">
-          <Text fontSize="50px" width="75%" fontWeight="bold">
+          <Text fontSize={{base: "25px", md: "50px"}} width={{ base: "100%", md: "75%"}} fontWeight="bold">
             Decentralized Autonomous Organizations (DAOs)
           </Text>
         </Box>
-        <Box overflowY="scroll" ml="-154px">
-          <Text fontWeight="bold" fontSize="25px">
+        <Box overflowY="scroll" ml={{base: "0", lg: "-154px"}}>
+          <Text fontWeight="bold" fontSize={{base: "18px", lg: "25px"}} mt={{ base: "20px", lg: "0" }}>
             What are DAOs?
           </Text>
           <Text mt="10px">
@@ -58,7 +62,7 @@ const LandingPage = () => {
             voice, and everything happens transparently on-chain.
           </Text>
 
-          <Text fontWeight="bold" fontSize="25px" mt="20px">
+          <Text fontWeight="bold" fontSize={{base: "18px", lg: "25px"}} mt="20px">
             Why do we need DAOs?
           </Text>
 
@@ -74,7 +78,7 @@ const LandingPage = () => {
             collaboration and coordination.
           </Text>
 
-          <Text fontWeight="bold" fontSize="25px" mt="20px">
+          <Text fontWeight="bold" fontSize={{base: "18px", lg: "25px"}} mt="20px">
           How do DAOs work?
           </Text>
 

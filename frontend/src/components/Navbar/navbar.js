@@ -1,8 +1,10 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import brandLogo from "../../assets/icons/brand-logo.svg";
+import { closeIcon, hamBurger } from "../../assets/svgs/svg";
 import { login, logout } from "../../utils/cluster";
 import CustomButton from "../CustomButton/customButton";
+import SmallScreenNav from "./smallScreenNav";
 
 const NavBar = () => {
   const [isConnected, setIsConnected] = useState(localStorage.getItem("isDisconnected"));
@@ -10,6 +12,7 @@ const NavBar = () => {
   const [balance, setBalance] = useState();
   const [aeSdk, setAeSdk] = useState();
   const [isConnecting, setIsConnecting] = useState(false);
+  const [displayNav, setDisplayNav] = useState(false);
 
   const init = async() => {
     if(localStorage.getItem("isConnected")) {
@@ -64,45 +67,64 @@ const NavBar = () => {
   return (
     <Flex
       bg="brand.white"
-      p="15px 80px"
+      p={{ base: "5px 30px", lg: "15px 80px"}}
       alignItems="center"
       justifyContent="space-between"
       fontSize="14px"
       style={{ boxShadow: "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px" }}
+      display={{ base: "block", lg: "flex" }}
     >
-      <Box>
+      <Box mt={{ base: "15px", lg: "0" }} display={{ base: "flex" }} justifyContent="space-between">
         <a href="/">
-          <Image cursor="pointer" src={brandLogo} alt="brand-logo" />
+          <Image cursor="pointer" width={{ base: "100px", lg: "100%" }} src={brandLogo} alt="brand-logo" />
         </a>
+
+        <Box onClick={() => setDisplayNav(!displayNav)} cursor="pointer" display={{ base: "flex", lg: "none" }}>{displayNav ? closeIcon : hamBurger}</Box>
       </Box>
-      {isConnected && <Text>
-          Connected user:{" "}
-          <span style={{ color: "#A2ADBE" }}>{address.slice(0,35) + "..."}</span>
-      </Text>}
-      {isConnected ? 
-      <CustomButton
-      bg="none"
-      hoverBg="brand.primary"
-      hoverColor="brand.white"
-      color="brand.dark"
-      border="1px solid #1A202C"
-      onClick={() => disconnectWallet()}
-      isLoading={isConnecting}
-    >
-      Disconnect
-    </CustomButton> :
-      
-      <CustomButton
+
+      <Box mt={{ base: "20px", lg: "0" }} display={{ base: "none", lg: "flex" }}>
+        {isConnected && <Text>
+            Connected user:{" "}
+            <span style={{ color: "#A2ADBE" }}>{address.slice(0,35) + "..."}</span>
+        </Text>}
+      </Box>
+
+      <Box my={{ base: "20px", lg: "0" }} display={{ base: "none", lg: "flex" }}>
+        {isConnected ? 
+        <CustomButton
         bg="none"
         hoverBg="brand.primary"
         hoverColor="brand.white"
         color="brand.dark"
         border="1px solid #1A202C"
-        onClick={() => connectWallet()}
+        onClick={() => disconnectWallet()}
         isLoading={isConnecting}
       >
-        Connect Wallet
-      </CustomButton>}
+        Disconnect
+        </CustomButton> :
+        
+        <CustomButton
+          bg="none"
+          hoverBg="brand.primary"
+          hoverColor="brand.white"
+          color="brand.dark"
+          border="1px solid #1A202C"
+          onClick={() => connectWallet()}
+          isLoading={isConnecting}
+        >
+          Connect Wallet
+        </CustomButton>}
+      </Box>
+
+      {displayNav && 
+        <SmallScreenNav
+        isConnected={isConnected}
+        address={address}
+        isConnecting={isConnecting}
+        disconnectWallet={disconnectWallet}
+        connectWallet={connectWallet}
+        />
+      }
     </Flex>
   );
 };

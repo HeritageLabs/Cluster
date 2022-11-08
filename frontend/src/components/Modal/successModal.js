@@ -18,7 +18,7 @@ function SuccessModal({
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
-        <Box p="17px 19px">
+        <Box p={{ base: "9px, 10px", lg: "17px 19px"}}>
           <ModalCloseButton _focus={{ boxShadow: 'none' }}>
             {closeModal}
           </ModalCloseButton>

@@ -10,3 +10,39 @@ export const closeModal = (
   <path d="M20.5007 32.0007L28.5007 40.0007L44.5007 24.0007M59.1673 32.0007C59.1673 46.7282 47.2282 58.6673 32.5007 58.6673C17.7731 58.6673 5.83398 46.7282 5.83398 32.0007C5.83398 17.2731 17.7731 5.33398 32.5007 5.33398C47.2282 5.33398 59.1673 17.2731 59.1673 32.0007Z" stroke="#56BC81" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
   );
+
+  export const hamBurger = (
+    <svg
+      width="25"
+      height="25"
+      viewBox="0 0 25 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M3.77783 12.5H21.7778M3.77783 6.5H21.7778M9.77783 18.5H21.7778"
+        stroke="#1C1CFF"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+  
+  export const closeIcon = (
+    <svg
+      width="25"
+      height="25"
+      viewBox="0 0 25 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M17.7778 7.5L7.77783 17.5M7.77783 7.5L17.7778 17.5"
+        stroke="#1C1CFF"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
