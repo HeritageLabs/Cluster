@@ -21,7 +21,13 @@ const CreateDao = () => {
     setIsLoading(true);
     try {
       if ((fullName, votingTime, quorum, walletAddr)) {
-        const daoDetails = { name: fullName, voteTime: votingTime, quorum, members: walletAddr.split(' ') };
+        let wallets = walletAddr.split(",");
+        wallets = wallets.map((w) => {
+          w = w.trim();
+          if (w) {
+            return w;
+        });
+        const daoDetails = { name: fullName, voteTime: votingTime, quorum, members: wallets };
         console.log(daoDetails);
         await createDAO(daoDetails)
         .then((res) => console.log(res))
@@ -91,7 +97,7 @@ const CreateDao = () => {
 
             <TextInput
               type="text"
-              placeholder="Other member's wallet address(comma separated)"
+              placeholder="All members wallet address(comma separated)"
               label="Member's wallet Address"
               color="brand.dark"
               value={walletAddr}
