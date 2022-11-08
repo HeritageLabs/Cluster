@@ -53,7 +53,7 @@ const Dao = () => {
     prs.map((p) => {
       p.id = p.id.toString();
       p.endTime = p.endTime.toString();
-      p.value = p.value.toString();
+      p.value = p.value.toString() / 1e18;
       p.votes = p.votes.toString();
       return p;
     })
