@@ -24,7 +24,7 @@ const CreateProposal = () => {
   const [DAOName, setDAOName] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [proposalType, setProposalType] = useState("");
+  const [proposalType, setProposalType] = useState("transfer");
   const [value, setValue] = useState("");
   const [receipientAddress, setReceipientAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -138,11 +138,11 @@ const CreateProposal = () => {
               data-testid="select"
               value={proposalType}
             >
-              <option value="Transfer">Transfer</option>
-              <option value="Add">Add</option>
-              <option value="Remove">Remove</option>
-              <option value="Vote Time">Vote Time</option>
-              <option value="Quorum">Quorum</option>
+              <option value="transfer">Transfer</option>
+              <option value="add">Add</option>
+              <option value="remove">Remove</option>
+              <option value="voteTime">Vote Time</option>
+              <option value="quorum">Quorum</option>
             </Select>
 
             <TextInput
