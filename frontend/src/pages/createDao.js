@@ -27,6 +27,7 @@ const CreateDao = () => {
           w = w.trim();
           if (w) {
             return w;
+          }
         });
         const daoDetails = { name: fullName, voteTime: votingTime, quorum, members: wallets };
         console.log(daoDetails);
