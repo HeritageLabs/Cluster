@@ -1,4 +1,5 @@
 import { Box, Divider, Flex, SimpleGrid, Text } from "@chakra-ui/react";
+import { Spinner, toaster } from "evergreen-ui";
 import { useEffect, useState } from "react";
 import HeadTag from "../components/Common/headTag";
 import CustomButton from "../components/CustomButton/customButton";
@@ -7,8 +8,9 @@ import { clusterAddress, getDA0s, getDAODetails } from "../utils/cluster";
 
 
 const Home = () => {
-    const [viewAllDAO, setViewAllDAO] = useState(false);
+    const [viewAllDAO, setViewAllDAO] = useState(true);
     const [DAOs, setDAOs] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
   async function init() {
       await getAllDAOs();
@@ -26,7 +28,7 @@ const Home = () => {
           d.id = d.id.toString();
           d.created_at = d.created_at.toString();
           return d;
-        });
+        })
         setDAOs(res);
         localStorage.setItem("daos", JSON.stringify(res));
       })
@@ -37,6 +39,7 @@ const Home = () => {
       // }
     } catch (error) {
       console.log({ error });
+      setIsLoading(false);
       window.alert("failed to get DAOs");
       // toast(<NotificationError text="failed to get daos"/>)
     };
@@ -44,20 +47,23 @@ const Home = () => {
 
   useEffect(() => {
     init();
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 2000);
   }, [])
 
   return (
-    <Box>
+    <Box mx="auto">
       <HeadTag title="View Demo" />
       <NavBar />
       <Box mt="40px" width="100%" m="30px auto" textAlign="center">
         <Box mx="auto">
           <CustomButton
             bg="brand.primary"
-            hoverBg="brand.white"
+            hoverBg="none"
             hoverColor="brand.primary"
             color="brand.white"
-            border="1px solid #FAF9F7"
+            border="1px solid #1C1CFF"
             w={{ base: "80%", lg: "30%"}}
             mx="auto"
             href="/create-dao"
@@ -77,11 +83,14 @@ const Home = () => {
             mx="auto"
             onClick={() => setViewAllDAO(!viewAllDAO)}
           >
-            View all DAOs
+            Hide all DAOs
           </CustomButton>
         </Box>
       </Box>
 
+
+    {isLoading ? <Flex justifyContent="center" mt="20px"><Spinner /> </Flex> :
+      <Box>
         {viewAllDAO &&
         <Box my="10px">
             {DAOs.length < 1 ? (
@@ -152,6 +161,9 @@ const Home = () => {
             )}
         </Box>
         }
+      </Box>
+    }
+
     </Box>
   );
 };

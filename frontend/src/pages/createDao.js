@@ -7,6 +7,7 @@ import SuccessModal from "../components/Modal/successModal";
 import { createDAO } from "../utils/cluster";
 import { toaster } from "evergreen-ui";
 import HeadTag from "../components/Common/headTag";
+import TextAreaInput from "../components/TextInputs/TextAreaInput";
 
 const CreateDao = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -68,7 +69,7 @@ const CreateDao = () => {
             Create New DAO
           </Text>
         </Box>
-        <Box overflowY="scroll" ml={{ base: "10px", lg: "-54px"}} w={{ base: "100%", lg: "80%"}}>
+        <Box overflowY="scroll" ml={{ base: "10px", lg: "0"}} w={{ base: "100%", lg: "80%"}}>
           <form onSubmit={handleSubmit}>
             <TextInput
               type="text"
@@ -97,10 +98,10 @@ const CreateDao = () => {
               onChange={(e) => setQuorum(e.target.value)}
             />
 
-            <TextInput
-              type="text"
+            <TextAreaInput
               placeholder="All members wallet address(comma separated)"
-              label="Member's wallet Address"
+              label="Member's Wallet Address"
+              type="text"
               color="brand.dark"
               value={walletAddr}
               onChange={(e) => setWalletAddr(e.target.value)}
@@ -117,7 +118,7 @@ const CreateDao = () => {
               href="/home"
               isLoading={isLoading}
             >
-              {isLoading ? <Spinner /> : "Create DAO"}
+              Create DAO
             </CustomButton>
           </form>
         </Box>

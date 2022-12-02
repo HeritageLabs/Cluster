@@ -5,12 +5,12 @@ import { useParams } from "react-router-dom";
 import HeadTag from "../components/Common/headTag";
 import CustomButton from "../components/CustomButton/customButton";
 import NavBar from "../components/Navbar/navbar";
-import TextInput from "../components/TextInputs/TextInput";
 import { donateTo, executeProposal, getDA0, getDA0Details, getProposals, voteProposal } from "../utils/cluster";
 
 const Dao = () => {
   const [DAOName, setDAOName] = useState("");
   const [DAOAddress, setDAOAddress] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [dao, setDao] = useState({});
   const [proposals, setProposals] = useState([]);
   const [isMember, setIsMember] = useState(false);
@@ -31,7 +31,9 @@ const Dao = () => {
   }
 
   const donate = async(amount=2) => {
+    setIsLoading(true)
     const res = await donateTo(DAOAddress, amount * 1e18);
+    res ? setIsLoading(false) : setIsLoading(true);
     init();
   }
 
@@ -69,7 +71,6 @@ const Dao = () => {
     <Box>
       <HeadTag title="Your DAO" />
       <NavBar />
-
       {DAOAddress === "" ? <Flex justifyContent="center" mt="20px"><Spinner /> </Flex> :
       <>
       <Flex
@@ -90,8 +91,21 @@ const Dao = () => {
                 border="1px solid white"
                 mt={{ base: "10px", lg: "1px"}}
                 onClick={() => {donate()}}
+                isLoading={isLoading}
               >
                 Donate
+              </CustomButton>
+
+              <CustomButton
+                bg="white"
+                hoverBg="brand.primary"
+                hoverColor="brand.white"
+                color="brand.primary"
+                border="1px solid white"
+                mt={{ base: "10px", lg: "1px"}}
+                href="/home"
+              >
+                Go back home
               </CustomButton>
       </Flex>
       <Box p={{ base: "5px 30px", lg: "15px 80px"}}>
@@ -161,10 +175,10 @@ const Dao = () => {
           <Box mx="auto">
             {isMember && <CustomButton
               bg="brand.primary"
-              hoverBg="brand.white"
+              hoverBg="none"
               hoverColor="brand.primary"
               color="brand.white"
-              border="1px solid #FAF9F7"
+              border="1px solid #1C1CFF"
               w="80%"
               m="5% 10%"
               mx="auto"
