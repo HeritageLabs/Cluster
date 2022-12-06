@@ -76,14 +76,30 @@ const Home = () => {
             bg="none"
             hoverBg="brand.primary"
             hoverColor="brand.white"
-            color="brand.dark"
-            border="1px solid #1A202C"
+            color="brand.primary"
+            border="1px solid #1C1CFF"
+            w={{ base: "80%", lg: "30%"}}
+            mt="20px"
+            mx="auto"
+            href="/nft"
+            target="_blank"
+          >
+            View all Collectibless
+          </CustomButton>
+        </Box>
+        <Box>
+          <CustomButton
+            bg="none"
+            hoverBg="brand.primary"
+            hoverColor="brand.white"
+            color="brand.primary"
+            border="1px solid #1C1CFF"
             w={{ base: "80%", lg: "30%"}}
             m="20px 0"
             mx="auto"
             onClick={() => setViewAllDAO(!viewAllDAO)}
           >
-            Hide all DAOs
+            {`${viewAllDAO ? 'Hide' : 'View'} all DAOs`}
           </CustomButton>
         </Box>
       </Box>
