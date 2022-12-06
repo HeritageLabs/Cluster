@@ -8,6 +8,8 @@ import Home from "../pages/home";
 import CreateDao from "../pages/createDao";
 import Dao from "../pages/dao";
 import CreateProposal from "../pages/createProposal";
+import MarketPlace from "../pages/marketPlace";
+import MyNFT from "../pages/myNFT";
 
 const AppRoute = () => {
 
@@ -20,6 +22,8 @@ const AppRoute = () => {
         <Route path="/create-dao" element={<CreateDao />} />
         <Route path="/create-proposal/:id" element={<CreateProposal />} />
         <Route path="/dao/:id" element={<Dao />} />
+        <Route path="/nft" element={<MarketPlace />} />
+        <Route path="/my-nfts" element={<MyNFT />} />
       </Routes>
      </ChakraProvider>
     </BrowserRouter>,
