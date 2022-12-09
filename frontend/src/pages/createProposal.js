@@ -43,14 +43,11 @@ const CreateProposal = () => {
           value: value * 1e18,
           receipientAddress,
         };
-        //   console.log(proposalDetails);
-        await createProposal(DAOAddress, proposalDetails)
-          .then((res) => console.log(res))
-          .catch((err) => toaster.danger(err))
-          .finally(() => setIsLoading(false));
+        await createProposal(DAOAddress, proposalDetails);
         navigate(`/dao/${id}`);
       }
     } catch (error) {
+      console.log({ error })
       setIsLoading(false);
       toaster.danger("Error occured");
     }
@@ -58,7 +55,7 @@ const CreateProposal = () => {
 
   useEffect(() => {
     getDA0(id).then((res) => {
-      setDAOAddress(res.contract_address);
+      setDAOAddress(res.address);
       setDAOName(res.name);
     });
   }, []);
@@ -81,13 +78,13 @@ const CreateProposal = () => {
         </Text>
       </Flex>
 
-      <SimpleGrid columns={{ base: 1, lg: 2 }} mt="30px" p={{ base: "5px 30px", lg: "15px 80px"}} alignItems="center">
+      <SimpleGrid columns={{ base: 1, lg: 2 }} mt="30px" p={{ base: "5px 30px", lg: "15px 80px" }} alignItems="center">
         <Box>
-          <Text fontSize={{ base: "25px", lg: "50px"}} width={{ base: "100%", lg: "75%"}} fontWeight="bold">
+          <Text fontSize={{ base: "25px", lg: "50px" }} width={{ base: "100%", lg: "75%" }} fontWeight="bold">
             Create New Proposal
           </Text>
         </Box>
-        <Box overflowY="scroll" ml={{ base: "10px", lg: "-54px"}} w={{ base: "100%", lg: "80%"}}>
+        <Box overflowY="scroll" ml={{ base: "10px", lg: "-54px" }} w={{ base: "100%", lg: "80%" }}>
           <form onSubmit={handleSubmit}>
             <TextInput
               type="text"

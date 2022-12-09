@@ -1,44 +1,46 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import brandLogo from "../../assets/icons/brand-logo.svg";
 import { closeIcon, hamBurger } from "../../assets/svgs/svg";
-import { login, logout } from "../../utils/cluster";
+import { connect, disconnect, getAccount, login, logout } from "../../utils/cluster";
 import CustomButton from "../CustomButton/customButton";
 import SmallScreenNav from "./smallScreenNav";
 
 const NavBar = () => {
-  const [isConnected, setIsConnected] = useState(localStorage.getItem("isDisconnected"));
+  const [isConnected, setIsConnected] = useState(localStorage.getItem("isConnected"));
   const [address, setAddress] = useState("");
   const [balance, setBalance] = useState();
-  const [aeSdk, setAeSdk] = useState();
   const [isConnecting, setIsConnecting] = useState(false);
   const [displayNav, setDisplayNav] = useState(false);
+  const navigate = useNavigate();
 
-  const init = async() => {
-    if(localStorage.getItem("isConnected")) {
-      if(!window.client) {
-        await connectWallet(); 
+  const init = async () => {
+    //Check connection
+    if (isConnected) {
+      const account = await getAccount();
+      console.log({ account })
+      if (account) {
+        setAddress(account.address);
+        setBalance(account.balance);
+      } else {
+        navigate("/");
       }
-      setIsConnected(true);
-      setAddress(localStorage.getItem("isConnected"));
+    } else {
+      navigate("/");
     }
   }
 
   useEffect(() => {
-    init();
+    init()
   }, [])
 
-  const connectWallet = async() => {
+  const connectWallet = async () => {
     setIsConnecting(true);
     try {
-      const client = await login();
-      window.client = client;
-      const account = Object.keys(client._accounts.current)[0]
-      setAddress(account);
-      const accountBalance = (await client.getBalance(account)) / 1e18;
-      setBalance(accountBalance);
+      await connect();
+      await init();
       setIsConnected(true);
-      localStorage.setItem("isConnected", account);
       setIsConnecting(false);
     } catch (err) {
       console.log(err);
@@ -48,14 +50,13 @@ const NavBar = () => {
     }
   }
 
-  const disconnectWallet = async() => {
+  const disconnectWallet = async () => {
     setIsConnecting(true);
     try {
+      await disconnect();
       setIsConnected(false);
-      window.client = undefined;
-      localStorage.removeItem("isConnected");
       setIsConnecting(false);
-      await logout();
+      navigate("/");
     } catch (err) {
       console.log(err);
       window.alert("an error occured!");
@@ -67,7 +68,7 @@ const NavBar = () => {
   return (
     <Flex
       bg="brand.white"
-      p={{ base: "5px 30px", lg: "15px 80px"}}
+      p={{ base: "5px 30px", lg: "15px 80px" }}
       alignItems="center"
       justifyContent="space-between"
       fontSize="14px"
@@ -84,45 +85,45 @@ const NavBar = () => {
 
       <Box mt={{ base: "20px", lg: "0" }} display={{ base: "none", lg: "flex" }}>
         {isConnected && <Text>
-            Connected user:{" "}
-            <span style={{ color: "#A2ADBE" }}>{address.slice(0,35) + "..."}</span>
+          Connected user:{" "}
+          <span style={{ color: "#A2ADBE" }}>{address.slice(0, 35) + "..."}</span>
         </Text>}
       </Box>
 
       <Box my={{ base: "20px", lg: "0" }} display={{ base: "none", lg: "flex" }}>
-        {isConnected ? 
-        <CustomButton
-        bg="none"
-        hoverBg="brand.primary"
-        hoverColor="brand.white"
-        color="brand.dark"
-        border="1px solid #1A202C"
-        onClick={() => disconnectWallet()}
-        isLoading={isConnecting}
-      >
-        Disconnect
-        </CustomButton> :
-        
-        <CustomButton
-          bg="none"
-          hoverBg="brand.primary"
-          hoverColor="brand.white"
-          color="brand.dark"
-          border="1px solid #1A202C"
-          onClick={() => connectWallet()}
-          isLoading={isConnecting}
-        >
-          Connect Wallet
-        </CustomButton>}
+        {isConnected ?
+          <CustomButton
+            bg="none"
+            hoverBg="brand.primary"
+            hoverColor="brand.white"
+            color="brand.dark"
+            border="1px solid #1A202C"
+            onClick={() => disconnectWallet()}
+            isLoading={isConnecting}
+          >
+            Disconnect
+          </CustomButton> :
+
+          <CustomButton
+            bg="none"
+            hoverBg="brand.primary"
+            hoverColor="brand.white"
+            color="brand.dark"
+            border="1px solid #1A202C"
+            onClick={() => connectWallet()}
+            isLoading={isConnecting}
+          >
+            Connect Wallet
+          </CustomButton>}
       </Box>
 
-      {displayNav && 
+      {displayNav &&
         <SmallScreenNav
-        isConnected={isConnected}
-        address={address}
-        isConnecting={isConnecting}
-        disconnectWallet={disconnectWallet}
-        connectWallet={connectWallet}
+          isConnected={isConnected}
+          address={address}
+          isConnecting={isConnecting}
+          disconnectWallet={disconnectWallet}
+          connectWallet={connectWallet}
         />
       }
     </Flex>

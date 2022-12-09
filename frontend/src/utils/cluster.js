@@ -1,137 +1,150 @@
-import { AeSdkAepp, Node, BrowserWindowMessageConnection, walletDetector} from '@aeternity/aepp-sdk';
-import clusterACI from './clusterACI.json';
-import daoACI from "./daoACI.json";
+import { ethers } from 'ethers';
+import ClusterJson from "./Cluster.json";
+import DAOJson from "./DAO.json";
 
-export const clusterAddress = "ct_4GgKrRbehhu6MVS5v3zy1kRHDjidfWgaGwFE6A1VbGZ1Rx9Hk";
-
-const COMPILER_URL = 'https://compiler.aepps.com';
-
-const node = new Node('https://testnet.aeternity.io')
-
-const aeSdk = new AeSdkAepp({
-  nodes: [{ name: 'testnet', instance: node }],
-  compilerUrl: COMPILER_URL,
-  onNetworkChange: async ({networkId}) => console.log(networkId),
-  onAddressChange: async ({current}) => console.log(current[0]),
-  onDisconnect: () => console.log("Aepp is disconnected")
-})
+export const clusterAddress = "0x99557E22588A9c5b32Fa3B0D2B4A1D75a89Abc1e";
 
 export async function getDA0s() {
-  const contract = await aeSdk.getContractInstance({aci: clusterACI, contractAddress: clusterAddress})
-  const res = await contract.methods.getDAOs();
-  const daos = res.decodedResult;
-  return daos;
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const cluster = new ethers.Contract(clusterAddress, ClusterJson.abi, provider);
+  const daos = await cluster.getDAOs();
+  const modifiedDaos = daos.map((d) => {
+    return { id: Number(d.id), name: d.name, address: d.contract_address, creator: d.creator, created_at: Number(d.created_at) }
+  })
+  return modifiedDaos;
 }
 
-export async function getDA0sFor () {
-    const contract = await aeSdk.getContractInstance({aci: clusterACI, contractAddress: clusterAddress})
-    const res = await contract.methods.getDA0sFor();
-    const daos = res.decodedResult;
-    return daos;
+export async function createDAO(dao) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const cluster = new ethers.Contract(clusterAddress, ClusterJson.abi, signer);
+  const createDaotxn = await cluster.createDAO(dao.name, dao.voteTime, dao.quorum, dao.members);
+  await createDaotxn.wait();
 }
 
-
-export async function createDAO(dao) { 
-  const contract = await window.client.getContractInstance({aci: clusterACI, contractAddress: clusterAddress});
-  const res = await contract.methods.createDAO(dao.name, dao.voteTime, dao.quorum, dao.members);
+export async function getDA0(id) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const cluster = new ethers.Contract(clusterAddress, ClusterJson.abi, provider);
+  const dao = await cluster.getDAO(id);
+  return {
+    id: Number(dao.id), name: dao.name, address: dao.contract_address, creator: dao.creator, created_at: Number(dao.created_at)
+  }
 }
 
-export async function getDA0 (id) {
-    const contract = await aeSdk.getContractInstance({aci: clusterACI, contractAddress: clusterAddress})
-    const res = await contract.methods.getDAO(id);
-    const dao = res.decodedResult;
-    return dao;
+export async function getDA0Details(id) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const cluster = new ethers.Contract(clusterAddress, ClusterJson.abi, provider);
+  const dao = await cluster.getDAODetails(id);
+  return {
+    totalMembers: Number(dao.totalMembers), voteTime: Number(dao.voteTime), quorum: Number(dao.quorum), balance: ethers.utils.formatEther(dao.balance), address: dao.contract_address
+  }
 }
 
-export async function getDA0Details(DAOAddress) {
-  const contract = await aeSdk.getContractInstance({aci: daoACI, contractAddress: DAOAddress})
-  const res = await contract.methods.getDetails();
-  const details = res.decodedResult;
-  return details;
+export async function isDAOMember(DAOAddress) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const dao = new ethers.Contract(DAOAddress, DAOJson.abi, provider);
+  const isMember = await dao.isDAOMember(await provider.getSigner().getAddress());
+  return isMember;
 }
 
 export async function donateTo(DAOAddress, amount) {
-  const contract = await window.client.getContractInstance({aci: daoACI, contractAddress: DAOAddress})
-  console.log(contract);
-  const res = await contract.methods.donate({amount: Number(amount)});
-  return res.decodedResult
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = await provider.getSigner();
+  const dao = new ethers.Contract(DAOAddress, DAOJson.abi, signer);
+  await dao.donate();
 }
 
-export async function createProposal(DAOAddress, proposal) { 
-  const contract = await window.client.getContractInstance({aci: daoACI, contractAddress: DAOAddress});
-  const res = await contract.methods.createProposal(proposal.title, proposal.description, proposal.proposalType, proposal.value, proposal.receipientAddress);
+export async function createProposal(DAOAddress, proposal) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = await provider.getSigner();
+  const dao = new ethers.Contract(DAOAddress, DAOJson.abi, signer);
+  await dao.createProposal(proposal.title, proposal.description, proposal.proposalType, proposal.value, proposal.receipientAddress);
 }
 
-export async function voteProposal(DAOAddress, proposalId) { 
-  const contract = await window.client.getContractInstance({aci: daoACI, contractAddress: DAOAddress});
-  const res = await contract.methods.vote(proposalId);
+export async function voteProposal(DAOAddress, proposalId) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = await provider.getSigner();
+  const dao = new ethers.Contract(DAOAddress, DAOJson.abi, signer);
+  const tx = await dao.vote(proposalId);
+  await tx.wait();
 }
 
-export async function executeProposal(DAOAddress, proposalId) { 
-  const contract = await window.client.getContractInstance({aci: daoACI, contractAddress: DAOAddress});
-  const res = await contract.methods.executeProposal(proposalId);
+export async function executeProposal(DAOAddress, proposalId) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = await provider.getSigner();
+  const dao = new ethers.Contract(DAOAddress, DAOJson.abi, signer);
+  const tx = await dao.executeProposal(proposalId);
+  await tx.wait();
 }
 
 export async function getProposal(DAOAddress, id) {
-    const contract = await aeSdk.getContractInstance({aci: daoACI, contractAddress: DAOAddress})
-    const res = await contract.methods.getProposal(id);
-    const proposal = res.decodedResult;
-    return proposal;
+
 }
 
 export async function getProposals(DAOAddress) {
-    const contract = await aeSdk.getContractInstance({aci: daoACI, contractAddress: DAOAddress})
-    const res = await contract.methods.getProposals();
-    const proposals = res.decodedResult;
-    return proposals;
-}
-
-export async function getOngoingProposals(DAOAddress) {
-    const contract = await aeSdk.getContractInstance({aci: daoACI, contractAddress: DAOAddress})
-    const res = await contract.methods.getOngoingProposals();
-    const proposals = res.decodedResult;
-    return proposals;
-}
-
-export async function getProposalsToExecute(DAOAddress) {
-    const contract = await aeSdk.getContractInstance({aci: daoACI, contractAddress: DAOAddress})
-    const res = await contract.methods.getProposalsToExecute();
-    const proposals = res.decodedResult;
-    return proposals;
-}
-
-
-
-export const scanForWallets = async() => {
-    return new Promise((resolve) => {
-        const handleWallets = async ({ wallets, newWallet }) => {
-          try {
-            newWallet = newWallet || Object.values(wallets)[0]
-            stopScan()
-            await aeSdk.connectToWallet(newWallet.getConnection())
-            const { address: { current } } = await aeSdk.subscribeAddress('subscribe', 'connected')
-            // console.log(Object.keys(current)[0]);
-            resolve()
-          } catch (err) {
-            console.log(err);
-          }
-        }
-        const scannerConnection = new BrowserWindowMessageConnection()
-        const stopScan = walletDetector(scannerConnection, handleWallets)
+  console.log({ DAOAddress });
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const dao = new ethers.Contract(DAOAddress, DAOJson.abi, provider);
+  const proposals = await dao.getProposals();
+  const modifiedProposals = []
+  for (let i = 0; i < proposals.length; i++) {
+    modifiedProposals.push({
+      title: proposals[i].title,
+      description: proposals[i].description,
+      endTime: Number(proposals[i].endTime),
+      id: Number(proposals[i].id),
+      votes: Number(proposals[i].votes),
+      value: ethers.utils.formatEther(proposals[i].value),
+      receipient: proposals[i].receipient,
+      isExecuted: proposals[i].isExecuted
     })
-};
-
-export const login = async() => {
-  try {
-    await scanForWallets();
-  } catch (err) {
-    console.log(err)
   }
-  return aeSdk;
+  console.log({ proposals })
+  console.log({ modifiedProposals })
+  return modifiedProposals;
+}
+
+export async function getAvailableBalance() {
+
+}
+
+export async function connect() {
+  if (window.ethereum) {
+    try {
+      if (window.confirm("Are you sure you want to connect your wallet. This would let Heritage see your wallet address and account balance")) {
+        const accounts = await window.ethereum
+          .request({ method: 'eth_requestAccounts' });
+        localStorage.setItem("isConnected", "true");
+        return accounts[0];
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    window.alert("metamask not found!");
+  }
+}
+
+export async function getAccount() {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    // console.log({ accounts })
+    return {
+      address: accounts[0],
+      balance: ethers.utils.formatEther(await provider.getBalance(accounts[0]))
+    }
+  } catch (error) {
+    console.log({ error })
+  }
 }
 
 
-export async function logout () {
-  await aeSdk.disconnectWallet();
-  window.location.reload();
+export async function disconnect() {
+  try {
+    localStorage.removeItem("isConnected");
+  } catch (err) {
+    console(err);
+  }
+
 }

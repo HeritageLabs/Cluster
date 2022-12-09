@@ -30,12 +30,12 @@ const CreateDao = () => {
             return w;
           }
         });
-        const daoDetails = { name: fullName, voteTime: votingTime, quorum, members: wallets };
+        const daoDetails = { name: fullName, voteTime: votingTime * 3600, quorum, members: wallets };
         console.log(daoDetails);
         await createDAO(daoDetails)
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
-        .finally(() => setIsLoading(false));
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err))
+          .finally(() => setIsLoading(false));
         onOpen();
       } else {
         toaster.danger("Error occured");
@@ -63,13 +63,13 @@ const CreateDao = () => {
         </Text>
       </Flex>
 
-      <SimpleGrid columns={{ base: 1, lg: 2 }} mt="30px" p={{ base: "5px 30px", lg: "15px 80px"}} alignItems="center">
+      <SimpleGrid columns={{ base: 1, lg: 2 }} mt="30px" p={{ base: "5px 30px", lg: "15px 80px" }} alignItems="center">
         <Box>
-          <Text fontSize={{base: "25px", md: "50px"}} width="75%" fontWeight="bold">
+          <Text fontSize={{ base: "25px", md: "50px" }} width="75%" fontWeight="bold">
             Create New DAO
           </Text>
         </Box>
-        <Box overflowY="scroll" ml={{ base: "10px", lg: "0"}} w={{ base: "100%", lg: "80%"}}>
+        <Box overflowY="scroll" ml={{ base: "10px", lg: "0" }} w={{ base: "100%", lg: "80%" }}>
           <form onSubmit={handleSubmit}>
             <TextInput
               type="text"
